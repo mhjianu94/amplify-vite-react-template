@@ -1,26 +1,73 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '@/amplify/data/resource';
+import { fetchAuthSession } from 'aws-amplify/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Trash2, Loader2 } from 'lucide-react';
 
-const client = generateClient<Schema>();
+// Todo type definition
+interface Todo {
+  id: string;
+  content: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Get API endpoint from amplify_outputs.json
+const getApiUrl = async () => {
+  if (typeof window === 'undefined') return '';
+  
+  try {
+    // Load amplify_outputs.json
+    const response = await fetch('/amplify_outputs.json');
+    if (response.ok) {
+      const outputs = await response.json();
+      // API URL will be in outputs.api.url after deployment
+      return outputs?.api?.url || outputs?.custom?.todosApiUrl || '';
+    }
+  } catch (error) {
+    console.error('Error loading amplify_outputs.json:', error);
+  }
+  
+  return process.env.NEXT_PUBLIC_API_URL || '';
+};
 
 export function TodoList() {
-  const [todos, setTodos] = useState<Schema['Todo']['type'][]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [newTodoContent, setNewTodoContent] = useState('');
 
-  // Fetch todos
+  // Fetch todos from REST API
   const fetchTodos = async () => {
     try {
       setLoading(true);
-      const { data } = await client.models.Todo.list();
-      setTodos(data);
+      const apiUrl = await getApiUrl();
+      if (!apiUrl) {
+        console.error('API URL not configured. Deploy backend first.');
+        setLoading(false);
+        return;
+      }
+
+      const session = await fetchAuthSession();
+      const response = await fetch(`${apiUrl}/todos`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add API key or auth token if needed
+          ...(session.tokens?.idToken && {
+            Authorization: `Bearer ${session.tokens.idToken.toString()}`,
+          }),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setTodos(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching todos:', error);
     } finally {
@@ -28,33 +75,72 @@ export function TodoList() {
     }
   };
 
-  // Create todo
+  // Create todo via REST API
   const createTodo = async () => {
     if (!newTodoContent.trim()) return;
 
     try {
       setCreating(true);
-      await client.models.Todo.create({
-        content: newTodoContent,
+      const apiUrl = await getApiUrl();
+      if (!apiUrl) {
+        throw new Error('API URL not configured. Deploy backend first.');
+      }
+
+      const session = await fetchAuthSession();
+      const response = await fetch(`${apiUrl}/todos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session.tokens?.idToken && {
+            Authorization: `Bearer ${session.tokens.idToken.toString()}`,
+          }),
+        },
+        body: JSON.stringify({ content: newTodoContent }),
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create todo');
+      }
+
       setNewTodoContent('');
       await fetchTodos();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating todo:', error);
-      alert('Failed to create todo. Please check the console for details.');
+      alert(error.message || 'Failed to create todo. Please check the console for details.');
     } finally {
       setCreating(false);
     }
   };
 
-  // Delete todo
+  // Delete todo via REST API
   const deleteTodo = async (id: string) => {
     try {
-      await client.models.Todo.delete({ id });
+      const apiUrl = await getApiUrl();
+      if (!apiUrl) {
+        throw new Error('API URL not configured. Deploy backend first.');
+      }
+
+      const session = await fetchAuthSession();
+      const response = await fetch(`${apiUrl}/todos/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session.tokens?.idToken && {
+            Authorization: `Bearer ${session.tokens.idToken.toString()}`,
+          }),
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete todo');
+      }
+
       await fetchTodos();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting todo:', error);
-      alert('Failed to delete todo. Please check the console for details.');
+      alert(error.message || 'Failed to delete todo. Please check the console for details.');
     }
   };
 
@@ -77,7 +163,7 @@ export function TodoList() {
     <Card>
       <CardHeader>
         <CardTitle>Todos</CardTitle>
-        <CardDescription>Manage your todos with AWS Amplify</CardDescription>
+        <CardDescription>Manage your todos with AWS Amplify REST API</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Create Todo Form */}
@@ -129,4 +215,3 @@ export function TodoList() {
     </Card>
   );
 }
-
