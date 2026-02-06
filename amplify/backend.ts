@@ -1,7 +1,6 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { todosHandler } from './function/todos/resource';
-// Temporarily disabled: API Gateway setup causes Docker bundling error in CI/CD
 // import { api } from './api/resource';
 
 const backend = defineBackend({
@@ -9,7 +8,14 @@ const backend = defineBackend({
   todosHandler,
 });
 
-// TODO: Re-enable API Gateway once Docker bundling issue is resolved
-// The Lambda function will deploy successfully without the API Gateway
-// You can create the API Gateway manually in AWS Console and connect it to the Lambda
+// Note: The Docker bundling issue occurs because CDK tries to use Docker
+// for Lambda bundling in CI/CD. This is a known limitation.
+// 
+// Solutions:
+// 1. Add CDK_DOCKER=false to amplify.yml environment variables
+// 2. Or configure the function to use esbuild bundling (requires modifyResources)
+// 3. Or create API Gateway manually after Lambda deploys
+//
+// For now, the Lambda will attempt to deploy but may fail due to Docker requirement.
+// TODO: Re-enable API Gateway once bundling is confirmed working
 // api(backend);
