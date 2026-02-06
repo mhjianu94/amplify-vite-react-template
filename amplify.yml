@@ -7,14 +7,18 @@ backend:
         - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
 frontend:
   phases:
+    preBuild:
+      commands:
+        - npm install --prefix web-app
     build:
       commands:
-        - npm run build
+        - npm run build --prefix web-app
   artifacts:
-    baseDirectory: dist
+    baseDirectory: web-app/out
     files:
       - '**/*'
   cache:
     paths:
-      - .npm/**/*
-      - node_modules/**/*
+      - web-app/node_modules/**/*
+      - web-app/.next/cache/**/*
+      - amplify/node_modules/**/*
