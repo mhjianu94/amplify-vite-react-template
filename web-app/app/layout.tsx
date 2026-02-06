@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AmplifyProvider } from "@/components/amplify-provider";
+import '@/lib/amplify-config';
 
 export const metadata: Metadata = {
-  title: "Welcome",
-  description: "A Next.js app with shadcn/ui",
+  title: "Amplify + Next.js App",
+  description: "A Next.js app with AWS Amplify backend",
 };
 
 export default function RootLayout({
@@ -13,7 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <AmplifyProvider>{children}</AmplifyProvider>
+      </body>
     </html>
   );
 }

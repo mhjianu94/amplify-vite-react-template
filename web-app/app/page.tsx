@@ -6,52 +6,49 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowRight, Sparkles, Zap, Shield } from "lucide-react";
+import { ArrowRight, Sparkles, Zap, Shield, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { TodoList } from "@/components/todo-list";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       {/* Hero Section */}
-      <div className="container mx-auto px-4 py-20">
-        <div className="text-center space-y-6 max-w-3xl mx-auto">
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center space-y-6 max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 bg-primary/5 text-primary px-4 py-2 rounded-full text-sm font-medium">
-            <Sparkles className="w-4 h-4" />
-            Welcome to our platform
+            <CheckCircle2 className="w-4 h-4" />
+            Connected to AWS Amplify
           </div>
 
-          <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-foreground">
-            Build something{" "}
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
+            Amplify + Next.js{" "}
             <span className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
-              amazing
+              Todo App
             </span>
           </h1>
 
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            A modern web application built with Next.js and shadcn/ui.
-            Start building your next great idea today.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            A modern web application built with Next.js, AWS Amplify, and shadcn/ui.
+            Connected to your backend with real-time data sync.
           </p>
 
           <div className="flex gap-4 justify-center pt-4">
-            <Button size="lg" className="gap-2">
-              Get Started
-              <ArrowRight className="w-4 h-4" />
-            </Button>
             <Link href="/about">
               <Button size="lg" variant="outline">
-                About Us
-              </Button>
-            </Link>
-            <Link href="/api-test">
-              <Button size="lg" variant="outline">
-                Test API
+                About
               </Button>
             </Link>
           </div>
         </div>
 
+        {/* Todo List Section */}
+        <div className="max-w-2xl mx-auto mb-12">
+          <TodoList />
+        </div>
+
         {/* Features Section */}
-        <div className="grid md:grid-cols-3 gap-6 mt-24">
+        <div className="grid md:grid-cols-3 gap-6 mt-12">
           <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
             <CardHeader>
               <div className="w-12 h-12 bg-violet-100 rounded-lg flex items-center justify-center mb-4">
@@ -62,11 +59,6 @@ export default function Home() {
                 Built on Next.js for optimal performance and seamless user experience.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Link href="/features" className="text-sm text-primary hover:underline inline-flex items-center gap-1">
-                Learn more <ArrowRight className="w-3 h-3" />
-              </Link>
-            </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
@@ -79,11 +71,6 @@ export default function Home() {
                 Crafted with shadcn/ui components for a polished, modern look.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Link href="/design" className="text-sm text-primary hover:underline inline-flex items-center gap-1">
-                Learn more <ArrowRight className="w-3 h-3" />
-              </Link>
-            </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
@@ -93,14 +80,9 @@ export default function Home() {
               </div>
               <CardTitle>Secure by Default</CardTitle>
               <CardDescription>
-                Enterprise-grade security built into every layer of the stack.
+                Enterprise-grade security with AWS Amplify and Cognito authentication.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Link href="/security" className="text-sm text-primary hover:underline inline-flex items-center gap-1">
-                Learn more <ArrowRight className="w-3 h-3" />
-              </Link>
-            </CardContent>
           </Card>
         </div>
       </div>
