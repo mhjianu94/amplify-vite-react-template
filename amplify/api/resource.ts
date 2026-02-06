@@ -9,8 +9,22 @@ import { RestApi, LambdaIntegration, Cors } from 'aws-cdk-lib/aws-apigateway';
 export const api = (backend: any) => {
   // Get the Lambda function from the backend
   // Access the function via the resource name (the key matches what you pass to defineBackend)
-  const todosLambdaResource = (backend.resources as any).todosHandler;
-  const todosLambda = todosLambdaResource?.resources?.lambda;
+  // Using a try-catch to handle potential Docker bundling issues
+  let todosLambda;
+  try {
+    const todosLambdaResource = (backend.resources as any).todosHandler;
+    todosLambda = todosLambdaResource?.resources?.lambda;
+    
+    // If Lambda is not available, throw an error
+    if (!todosLambda) {
+      throw new Error('Lambda function not found in backend resources');
+    }
+  } catch (error) {
+    console.error('Error accessing Lambda function:', error);
+    // In CI/CD, if Docker is not available, this will fail
+    // Consider creating API Gateway manually or using function ARN instead
+    throw new Error('Failed to access Lambda function. Docker may not be available in CI/CD environment.');
+  }
 
   // Create REST API Gateway
   const restApi = new RestApi(backend.stack, 'TodosApi', {
