@@ -1,24 +1,78 @@
-## AWS Amplify React+Vite Starter Template
+# React + Vite Starter Template
 
-This repository provides a starter template for creating applications using React+Vite and AWS Amplify, emphasizing easy setup for authentication, API, and database capabilities.
+A modern React application built with Vite, TypeScript, and configured for deployment on AWS Amplify Hosting.
 
 ## Overview
 
-This template equips you with a foundational React application integrated with AWS Amplify, streamlined for scalability and performance. It is ideal for developers looking to jumpstart their project with pre-configured AWS services like Cognito, AppSync, and DynamoDB.
+This template provides a clean, production-ready React application setup with Vite for fast development and optimized builds. It's ideal for developers looking to quickly start a new frontend project.
 
 ## Features
 
-- **Authentication**: Setup with Amazon Cognito for secure user authentication.
-- **API**: Ready-to-use GraphQL endpoint with AWS AppSync.
-- **Database**: Real-time database powered by Amazon DynamoDB.
+- **React 18** - Latest React with modern hooks and features
+- **Vite** - Fast build tool and development server
+- **TypeScript** - Type-safe development
+- **ESLint** - Code quality and consistency
+- **AWS Amplify Hosting Ready** - Pre-configured for deployment
 
-## Deploying to AWS
+## Getting Started
 
-For detailed instructions on deploying your application, refer to the [deployment section](https://docs.amplify.aws/react/start/quickstart/#deploy-a-fullstack-app-to-aws) of our documentation.
+### Prerequisites
 
-## Security
+- Node.js >= 20.20.0
+- npm >= 10.8.0
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+### Installation
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Start development server:**
+   ```bash
+   npm run dev
+   ```
+
+3. **Build for production:**
+   ```bash
+   npm run build
+   ```
+
+4. **Preview production build:**
+   ```bash
+   npm run preview
+   ```
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run ESLint
+
+## Project Structure
+
+```
+.
+├── src/              # Source files
+│   ├── App.tsx      # Main App component
+│   ├── main.tsx     # Application entry point
+│   └── ...
+├── public/          # Static assets
+├── index.html       # HTML template
+├── vite.config.ts   # Vite configuration
+└── tsconfig.json    # TypeScript configuration
+```
+
+## Deployment
+
+This project is configured for AWS Amplify Hosting. The build process:
+
+1. Installs dependencies
+2. Builds the React app using Vite
+3. Deploys the `dist/` directory to Amplify Hosting
+
+Push to your connected Git repository and Amplify will automatically build and deploy.
 
 ## License
 

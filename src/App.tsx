@@ -1,38 +1,52 @@
-import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
+import { useState } from "react";
 
-const client = generateClient<Schema>();
+interface Todo {
+  id: string;
+  content: string;
+}
 
 function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-
-  useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
-  }, []);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [inputValue, setInputValue] = useState("");
 
   function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
+    const content = inputValue.trim();
+    if (content) {
+      const newTodo: Todo = {
+        id: Date.now().toString(),
+        content: content,
+      };
+      setTodos([...todos, newTodo]);
+      setInputValue("");
+    }
+  }
+
+  function deleteTodo(id: string) {
+    setTodos(todos.filter((todo) => todo.id !== id));
   }
 
   return (
     <main>
       <h1>My todos</h1>
-      <button onClick={createTodo}>+ new</button>
+      <div>
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && createTodo()}
+          placeholder="Enter todo content"
+        />
+        <button onClick={createTodo}>+ new</button>
+      </div>
       <ul>
         {todos.map((todo) => (
-          <li key={todo.id}>{todo.content}</li>
+          <li key={todo.id}>
+            {todo.content}
+            <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+          </li>
         ))}
       </ul>
-      <div>
-        🥳 App successfully hosted. Try creating a new todo.
-        <br />
-        <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
-          Review next step of this tutorial.
-        </a>
-      </div>
+      {todos.length === 0 && <p>No todos yet. Add one above!</p>}
     </main>
   );
 }
